@@ -1,5 +1,6 @@
 package cn.doublehh.adutils.service;
 
+import cn.doublehh.adutils.enums.ObjectClassEnum;
 import cn.doublehh.adutils.exception.AuthenticateException;
 import cn.doublehh.adutils.exception.UnknownAccountException;
 import cn.doublehh.adutils.model.OU;
@@ -274,7 +275,7 @@ public class DefaultADUserService implements ADUserService {
         try {
             SearchControls searchCtls = new SearchControls();
             searchCtls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
-            String searchFilter = "objectClass=organizationalUnit";
+            String searchFilter = "objectClass=" + ObjectClassEnum.ORGANIZATIONALUNIT.getObjectClass();
             NamingEnumeration<SearchResult> answer = dc.search(searchBase, searchFilter, searchCtls);
             while (answer.hasMoreElements()) {
                 SearchResult sr = answer.next();
