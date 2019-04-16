@@ -1,2 +1,2 @@
 g.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-cn.doublehh.adutils.config.ADUserAutoConfigure 
+cn.doublehh.adutils.config.ADUserAutoConfigure
