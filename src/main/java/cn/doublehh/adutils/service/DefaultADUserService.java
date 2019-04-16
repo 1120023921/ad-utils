@@ -314,4 +314,9 @@ public class DefaultADUserService implements ADUserService {
             throw new AuthenticateException("LDAP Connection: FAILED login with " + username);
         }
     }
+
+    @Override
+    public ADUser authenricate(String searchBase, String username, String password) {
+        return authenricate(searchBase, username, password, ADUser.class);
+    }
 }
