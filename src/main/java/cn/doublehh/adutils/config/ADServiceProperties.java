@@ -16,6 +16,7 @@ public class ADServiceProperties {
     private String adminPassword;
     private String ldapURL;
     private String returnedAtts;
+    private String domain;
 
     public String getAdminName() {
         return adminName;
@@ -47,5 +48,13 @@ public class ADServiceProperties {
 
     public void setReturnedAtts(String returnedAtts) {
         this.returnedAtts = returnedAtts;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 }

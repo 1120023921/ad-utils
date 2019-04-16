@@ -1,5 +1,7 @@
 package cn.doublehh.adutils.service;
 
+import cn.doublehh.adutils.exception.AuthenticateException;
+import cn.doublehh.adutils.exception.UnknownAccountException;
 import cn.doublehh.adutils.model.OU;
 import cn.doublehh.adutils.model.ADUser;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +12,7 @@ import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.*;
 import javax.naming.ldap.InitialLdapContext;
+import javax.naming.ldap.LdapContext;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +32,14 @@ public class DefaultADUserService implements ADUserService {
     private static String adminPassword;
     private static String ldapURL;
     private static String[] returnedAtts;
+    private static String domain;
 
-    public DefaultADUserService(String adminName, String adminPassword, String ldapURL, String[] returnedAtts) {
+    public DefaultADUserService(String adminName, String adminPassword, String ldapURL, String[] returnedAtts, String domain) {
         DefaultADUserService.adminName = adminName;
         DefaultADUserService.adminPassword = adminPassword;
         DefaultADUserService.ldapURL = ldapURL;
         DefaultADUserService.returnedAtts = returnedAtts;
+        DefaultADUserService.domain = domain;
     }
 
     /**
@@ -42,7 +47,7 @@ public class DefaultADUserService implements ADUserService {
      *
      * @return AD连接
      */
-    private DirContext getDirContext() {
+    private LdapContext getLdapContext() {
         Properties env = new Properties();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.SECURITY_AUTHENTICATION, "simple");//LDAP访问安全级别："none","simple","strong"
@@ -62,7 +67,7 @@ public class DefaultADUserService implements ADUserService {
      *
      * @param dc AD连接
      */
-    private void close(DirContext dc) {
+    private void close(LdapContext dc) {
         if (dc != null) {
             try {
                 dc.close();
@@ -75,7 +80,7 @@ public class DefaultADUserService implements ADUserService {
 
     @Override
     public void add(ADUser adUser) {
-        DirContext dc = getDirContext();
+        LdapContext dc = getLdapContext();
         try {
             Attributes attrs = new BasicAttributes(true);
             addAttrs(attrs, adUser);
@@ -119,7 +124,7 @@ public class DefaultADUserService implements ADUserService {
      */
     @Override
     public void delete(String dn) {
-        DirContext dc = getDirContext();
+        LdapContext dc = getLdapContext();
         try {
             dc.destroySubcontext(dn);
             log.info("ADUserUtils [ADUserUtils] 删除AD域用户成功:" + dn);
@@ -142,17 +147,17 @@ public class DefaultADUserService implements ADUserService {
      */
     @Override
     public boolean update(String dn, String key, String val, int updateMode) {
-        DirContext dc = getDirContext();
+        LdapContext dc = getLdapContext();
         try {
             ModificationItem[] mods = new ModificationItem[1];
             // 修改属性
             Attribute attr = new BasicAttribute(key, val);
-            if (DirContext.ADD_ATTRIBUTE == updateMode) {
-                mods[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, attr);//新增属性
-            } else if (DirContext.REMOVE_ATTRIBUTE == updateMode) {
-                mods[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, attr);//删除属性
-            } else if (DirContext.REPLACE_ATTRIBUTE == updateMode) {
-                mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr);//覆盖属性
+            if (LdapContext.ADD_ATTRIBUTE == updateMode) {
+                mods[0] = new ModificationItem(LdapContext.ADD_ATTRIBUTE, attr);//新增属性
+            } else if (LdapContext.REMOVE_ATTRIBUTE == updateMode) {
+                mods[0] = new ModificationItem(LdapContext.REMOVE_ATTRIBUTE, attr);//删除属性
+            } else if (LdapContext.REPLACE_ATTRIBUTE == updateMode) {
+                mods[0] = new ModificationItem(LdapContext.REPLACE_ATTRIBUTE, attr);//覆盖属性
             } else {
                 throw new IllegalArgumentException("ADUserUtils [ADUserUtils] 非法更新模式");
             }
@@ -175,7 +180,7 @@ public class DefaultADUserService implements ADUserService {
      */
     @Override
     public <T extends ADUser> List<T> searchADUser(String searchBase, Class<T> clazz) {
-        DirContext dc = getDirContext();
+        LdapContext dc = getLdapContext();
         List<T> result = new ArrayList<>();
         try {
             SearchControls searchCtls = new SearchControls();
@@ -234,16 +239,20 @@ public class DefaultADUserService implements ADUserService {
      */
     @Override
     public <T extends ADUser> T searchByUserName(String searchBase, String userName, Class<T> clazz) {
-        DirContext dc = getDirContext();
+        LdapContext dc = getLdapContext();
         SearchControls searchCtls = new SearchControls();
         searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         String searchFilter = "sAMAccountName=" + userName;
         searchCtls.setReturningAttributes(returnedAtts);
         try {
             NamingEnumeration<SearchResult> answer = dc.search(searchBase, searchFilter, searchCtls);
-            SearchResult sr = answer.next();
-            Attributes attributes = sr.getAttributes();
-            return attrToObject(attributes, clazz);
+            if (answer.hasMore()) {
+                SearchResult sr = answer.next();
+                Attributes attributes = sr.getAttributes();
+                return attrToObject(attributes, clazz);
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             log.error("ADUserUtils [ADUserUtils] 指定搜索节点搜索指定域用户失败", e);
             throw new RuntimeException("ADUserUtils [ADUserUtils] 指定搜索节点搜索指定域用户失败");
@@ -261,7 +270,7 @@ public class DefaultADUserService implements ADUserService {
     @Override
     public void getStruct(String searchBase, OU ou) {
         searchBase = "OU=" + ou.getOu() + "," + searchBase;
-        DirContext dc = getDirContext();
+        LdapContext dc = getLdapContext();
         try {
             SearchControls searchCtls = new SearchControls();
             searchCtls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
@@ -285,6 +294,23 @@ public class DefaultADUserService implements ADUserService {
             throw new RuntimeException("ADUserUtils [ADUserUtils] 获取指定节点下的所有用户失败");
         } finally {
             close(dc);
+        }
+    }
+
+    @Override
+    public <T extends ADUser> T authenricate(String searchBase, String username, String password, Class<T> clazz) {
+        T user = searchByUserName(searchBase, username, clazz);
+        if (null == user) {
+            throw new UnknownAccountException("LDAP Connection: FAILED login with " + username);
+        }
+        LdapContext dc = getLdapContext();
+        try {
+            dc.addToEnvironment(Context.SECURITY_PRINCIPAL, username + domain);
+            dc.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
+            dc.reconnect(null);
+            return user;
+        } catch (NamingException e) {
+            throw new AuthenticateException("LDAP Connection: FAILED login with " + username);
         }
     }
 }

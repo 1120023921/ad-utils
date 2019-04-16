@@ -1,5 +1,6 @@
 package cn.doublehh.adutils;
 
+import cn.doublehh.adutils.enums.ObjectClassEnum;
 import cn.doublehh.adutils.model.ADUser;
 import cn.doublehh.adutils.model.OU;
 import cn.doublehh.adutils.service.ADUserService;
@@ -27,13 +28,13 @@ public class AdUtilsApplicationTests {
     @Test
     public void addAdUser() {
         ADUser adUser = new ADUser();
-        adUser.setObjectClass("user");
-        adUser.setDistinguishedName("CN=陈玮叶,OU=图书馆,OU=浙江万里学院,DC=NBSANKE,DC=TOP");
-        adUser.setSn("陈");
-        adUser.setGivenName("玮叶");
-//        adUser.setDisplayName("陈玮叶");
-        adUser.setUserPrincipalName("2015014093@nbsanke.top");
-        adUser.setSAMAccountName("2015014093");
+        adUser.setObjectClass(ObjectClassEnum.USER.getObjectClass());
+        adUser.setDistinguishedName("CN=会议室103,OU=会议室,OU=浙江万里学院,DC=NBSANKE,DC=TOP");
+//        adUser.setSn("陈");
+//        adUser.setGivenName("玮叶");
+        adUser.setDisplayName("会议室103");
+        adUser.setUserPrincipalName("room103@nbsanke.top");
+        adUser.setSAMAccountName("room103");
 //        adUser.setUnicodePwd("1120023921Hh");
         adUserService.add(adUser);
     }
@@ -68,5 +69,11 @@ public class AdUtilsApplicationTests {
         ou.setOu("浙江万里学院");
         adUserService.getStruct("DC=NBSANKE,DC=TOP", ou);
         System.out.println(ou);
+    }
+
+    @Test
+    public void authenricate() {
+        ADUser authenricate = adUserService.authenricate("DC=NBSANKE,DC=TOP", "2015014093", "1120023921Hh", ADUser.class);
+        System.out.println(authenricate);
     }
 }

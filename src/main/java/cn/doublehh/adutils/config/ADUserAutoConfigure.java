@@ -34,6 +34,6 @@ public class ADUserAutoConfigure {
     @ConditionalOnProperty(prefix = "ldap", value = "enabled", havingValue = "true")
     public ADUserService aDUserService() {
         String[] returnedAtts = properties.getReturnedAtts().trim().equals("*") ? null : properties.getReturnedAtts().trim().split(",");
-        return new DefaultADUserService(properties.getAdminName(), properties.getAdminPassword(), properties.getLdapURL(), returnedAtts);
+        return new DefaultADUserService(properties.getAdminName(), properties.getAdminPassword(), properties.getLdapURL(), returnedAtts, properties.getDomain());
     }
 }

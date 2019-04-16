@@ -5,7 +5,7 @@
 
     <groupId>cn.doublehh</groupId>
     <artifactId>ad-utils-spring-boot-starter</artifactId>
-    <version>1.0</version>
+    <version>2.0</version>
     <name>ad-utils</name>
 
     <properties>
@@ -51,6 +51,14 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <distributionManagement>
+        <repository>
+            <id>sankemaven</id>
+            <name>sanke maven</name>
+            <url>http://10.70.50.55:8088/repository/maven-releases</url>
+        </repository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>
