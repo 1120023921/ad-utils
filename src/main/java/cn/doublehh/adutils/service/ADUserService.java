@@ -23,6 +23,8 @@ public interface ADUserService {
 
     <T extends ADUser> T searchByUserName(String searchBase, String userName, Class<T> clazz);
 
+    ADUser searchByUserName(String searchBase, String userName);
+
     void getStruct(String searchBase, OU ou);
 
     <T extends ADUser> T authenricate(String searchBase, String username, String password, Class<T> clazz);

@@ -5,7 +5,6 @@ import cn.doublehh.adutils.exception.AuthenticateException;
 import cn.doublehh.adutils.exception.UnknownAccountException;
 import cn.doublehh.adutils.model.OU;
 import cn.doublehh.adutils.model.ADUser;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import javax.naming.Context;
@@ -26,7 +25,6 @@ import java.util.Properties;
  * Time: 20:55
  * Create: DoubleH
  */
-@Slf4j
 public class DefaultADUserService implements ADUserService {
 
     private static String adminName;
@@ -58,7 +56,6 @@ public class DefaultADUserService implements ADUserService {
         try {
             return new InitialLdapContext(env, null);
         } catch (NamingException e) {
-            log.error("ADUserUtils [ADUserUtils] AD域服务连接认证失败", e);
             throw new RuntimeException("ADUserUtils [ADUserUtils] AD域服务连接认证失败");
         }
     }
@@ -73,7 +70,6 @@ public class DefaultADUserService implements ADUserService {
             try {
                 dc.close();
             } catch (NamingException e) {
-                log.error("ADUserUtils [ADUserUtils] AD域服务连接关闭失败" + e);
                 throw new RuntimeException("ADUserUtils [ADUserUtils] AD域服务连接关闭失败");
             }
         }
@@ -86,9 +82,7 @@ public class DefaultADUserService implements ADUserService {
             Attributes attrs = new BasicAttributes(true);
             addAttrs(attrs, adUser);
             dc.createSubcontext(adUser.getDistinguishedName(), attrs);
-            log.info("ADUserUtils [ADUserUtils] 新增AD域用户成功");
         } catch (Exception e) {
-            log.error("ADUserUtils [ADUserUtils] 新增AD域用户失败", e);
             throw new RuntimeException("ADUserUtils [ADUserUtils] 新增AD域用户失败");
         } finally {
             close(dc);
@@ -113,7 +107,6 @@ public class DefaultADUserService implements ADUserService {
                 }
             }
         } catch (IllegalAccessException e) {
-            log.error("ADUserUtils [addAttrs] 属性访问权限不足", e);
             throw new RuntimeException("ADUserUtils [addAttrs] 属性访问权限不足");
         }
     }
@@ -128,9 +121,7 @@ public class DefaultADUserService implements ADUserService {
         LdapContext dc = getLdapContext();
         try {
             dc.destroySubcontext(dn);
-            log.info("ADUserUtils [ADUserUtils] 删除AD域用户成功:" + dn);
         } catch (Exception e) {
-            log.error("ADUserUtils [ADUserUtils] 删除AD域用户失败:" + dn, e);
             throw new RuntimeException("ADUserUtils [ADUserUtils] 删除AD域用户失败:" + dn);
         } finally {
             close(dc);
@@ -163,10 +154,8 @@ public class DefaultADUserService implements ADUserService {
                 throw new IllegalArgumentException("ADUserUtils [ADUserUtils] 非法更新模式");
             }
             dc.modifyAttributes(dn, mods);
-            log.info("ADUserUtils [ADUserUtils] 修改AD域用户属性成功");
             return true;
         } catch (Exception e) {
-            log.error("ADUserUtils [ADUserUtils] 修改AD域用户属性失败", e);
             throw new RuntimeException("ADUserUtils [ADUserUtils] 修改AD域用户属性失败");
         } finally {
             close(dc);
@@ -196,7 +185,6 @@ public class DefaultADUserService implements ADUserService {
             }
             return result;
         } catch (Exception e) {
-            log.error("ADUserUtils [ADUserUtils] 获取指定节点下的所有用户失败", e);
             throw new RuntimeException("ADUserUtils [ADUserUtils] 获取指定节点下的所有用户失败");
         } finally {
             close(dc);
@@ -220,13 +208,12 @@ public class DefaultADUserService implements ADUserService {
                         field.setAccessible(true);
                         field.set(adUser, attr.get());
                     } catch (NoSuchFieldException e1) {
-                        log.info("ADUserUtils [attrToObject] 无对应字段：" + id);
+                        e1.printStackTrace();
                     }
                 }
             }
             return adUser;
         } catch (InstantiationException | IllegalAccessException | NamingException e) {
-            log.error("ADUserUtils [attrToObject] 新建实例失败", e);
             throw new RuntimeException("ADUserUtils [attrToObject] 新建实例失败");
         }
     }
@@ -255,11 +242,15 @@ public class DefaultADUserService implements ADUserService {
                 return null;
             }
         } catch (Exception e) {
-            log.error("ADUserUtils [ADUserUtils] 指定搜索节点搜索指定域用户失败", e);
             throw new RuntimeException("ADUserUtils [ADUserUtils] 指定搜索节点搜索指定域用户失败");
         } finally {
             close(dc);
         }
+    }
+
+    @Override
+    public ADUser searchByUserName(String searchBase, String userName) {
+        return searchByUserName(searchBase, userName, ADUser.class);
     }
 
     /**
@@ -291,7 +282,6 @@ public class DefaultADUserService implements ADUserService {
                 }
             }
         } catch (Exception e) {
-            log.error("ADUserUtils [ADUserUtils] 获取指定节点下的所有用户失败", e);
             throw new RuntimeException("ADUserUtils [ADUserUtils] 获取指定节点下的所有用户失败");
         } finally {
             close(dc);

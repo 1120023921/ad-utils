@@ -34,7 +34,7 @@ public class AdUtilsApplicationTests {
 //        adUser.setGivenName("玮叶");
         adUser.setDisplayName("会议室103");
         adUser.setUserPrincipalName("room103@nbsanke.top");
-        adUser.setSAMAccountName("room103");
+        adUser.setsAMAccountName("room103");
 //        adUser.setUnicodePwd("1120023921Hh");
         adUserService.add(adUser);
     }
