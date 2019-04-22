@@ -21,9 +21,9 @@ public interface ADUserService {
 
     <T extends ADUser> List<T> searchADUser(String searchBase, Class<T> clazz);
 
-    <T extends ADUser> T searchByUserName(String searchBase, String userName, Class<T> clazz);
+    <T extends ADUser> T searchBySearchFilter(String searchBase, String searchFilter, Class<T> clazz);
 
-    ADUser searchByUserName(String searchBase, String userName);
+    ADUser searchBySearchFilter(String searchBase, String searchFilter);
 
     void getStruct(String searchBase, OU ou);
 

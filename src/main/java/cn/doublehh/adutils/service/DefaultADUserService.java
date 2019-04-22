@@ -221,16 +221,15 @@ public class DefaultADUserService implements ADUserService {
     /**
      * 指定搜索节点搜索指定域用户
      *
-     * @param searchBase 节点
-     * @param userName   用户名
+     * @param searchBase   节点
+     * @param searchFilter 过滤条件
      * @return AD用户
      */
     @Override
-    public <T extends ADUser> T searchByUserName(String searchBase, String userName, Class<T> clazz) {
+    public <T extends ADUser> T searchBySearchFilter(String searchBase, String searchFilter, Class<T> clazz) {
         LdapContext dc = getLdapContext();
         SearchControls searchCtls = new SearchControls();
         searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        String searchFilter = "sAMAccountName=" + userName;
         searchCtls.setReturningAttributes(returnedAtts);
         try {
             NamingEnumeration<SearchResult> answer = dc.search(searchBase, searchFilter, searchCtls);
@@ -249,8 +248,8 @@ public class DefaultADUserService implements ADUserService {
     }
 
     @Override
-    public ADUser searchByUserName(String searchBase, String userName) {
-        return searchByUserName(searchBase, userName, ADUser.class);
+    public ADUser searchBySearchFilter(String searchBase, String searchFilter) {
+        return searchBySearchFilter(searchBase, searchFilter, ADUser.class);
     }
 
     /**
@@ -290,7 +289,8 @@ public class DefaultADUserService implements ADUserService {
 
     @Override
     public <T extends ADUser> T authenricate(String searchBase, String username, String password, Class<T> clazz) {
-        T user = searchByUserName(searchBase, username, clazz);
+        final String searchFilter = "sAMAccountName=" + username;
+        T user = searchBySearchFilter(searchBase, searchFilter, clazz);
         if (null == user) {
             throw new UnknownAccountException("LDAP Connection: FAILED login with " + username);
         }

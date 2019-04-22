@@ -57,8 +57,8 @@ public class AdUtilsApplicationTests {
     }
 
     @Test
-    public void searchByUserName() {
-        ADUser adUser = adUserService.searchByUserName("OU=图书馆,OU=浙江万里学院,DC=NBSANKE,DC=TOP", "2015014074", ADUser.class);
+    public void searchBySearchFilter() {
+        ADUser adUser = adUserService.searchBySearchFilter("OU=图书馆,OU=浙江万里学院,DC=NBSANKE,DC=TOP", "(&(objectClass=user)(sAMAccountName=20150140))", ADUser.class);
         System.out.println(adUser);
     }
 
