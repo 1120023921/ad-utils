@@ -208,7 +208,6 @@ public class DefaultADUserService implements ADUserService {
                         field.setAccessible(true);
                         field.set(adUser, attr.get());
                     } catch (NoSuchFieldException e1) {
-                        e1.printStackTrace();
                     }
                 }
             }
