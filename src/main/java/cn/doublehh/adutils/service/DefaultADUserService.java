@@ -56,7 +56,7 @@ public class DefaultADUserService implements ADUserService {
         try {
             return new InitialLdapContext(env, null);
         } catch (NamingException e) {
-            throw new RuntimeException("ADUserUtils [ADUserUtils] AD域服务连接认证失败");
+            throw new RuntimeException("ADUserUtils [ADUserUtils] AD域服务连接认证失败", e);
         }
     }
 
@@ -70,7 +70,7 @@ public class DefaultADUserService implements ADUserService {
             try {
                 dc.close();
             } catch (NamingException e) {
-                throw new RuntimeException("ADUserUtils [ADUserUtils] AD域服务连接关闭失败");
+                throw new RuntimeException("ADUserUtils [ADUserUtils] AD域服务连接关闭失败", e);
             }
         }
     }
@@ -83,7 +83,7 @@ public class DefaultADUserService implements ADUserService {
             addAttrs(attrs, adUser);
             dc.createSubcontext(adUser.getDistinguishedName(), attrs);
         } catch (Exception e) {
-            throw new RuntimeException("ADUserUtils [ADUserUtils] 新增AD域用户失败");
+            throw new RuntimeException("ADUserUtils [ADUserUtils] 新增AD域用户失败", e);
         } finally {
             close(dc);
         }
@@ -107,7 +107,7 @@ public class DefaultADUserService implements ADUserService {
                 }
             }
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("ADUserUtils [addAttrs] 属性访问权限不足");
+            throw new RuntimeException("ADUserUtils [addAttrs] 属性访问权限不足", e);
         }
     }
 
@@ -122,7 +122,7 @@ public class DefaultADUserService implements ADUserService {
         try {
             dc.destroySubcontext(dn);
         } catch (Exception e) {
-            throw new RuntimeException("ADUserUtils [ADUserUtils] 删除AD域用户失败:" + dn);
+            throw new RuntimeException("ADUserUtils [ADUserUtils] 删除AD域用户失败:" + dn, e);
         } finally {
             close(dc);
         }
@@ -156,7 +156,7 @@ public class DefaultADUserService implements ADUserService {
             dc.modifyAttributes(dn, mods);
             return true;
         } catch (Exception e) {
-            throw new RuntimeException("ADUserUtils [ADUserUtils] 修改AD域用户属性失败");
+            throw new RuntimeException("ADUserUtils [ADUserUtils] 修改AD域用户属性失败", e);
         } finally {
             close(dc);
         }
@@ -185,7 +185,7 @@ public class DefaultADUserService implements ADUserService {
             }
             return result;
         } catch (Exception e) {
-            throw new RuntimeException("ADUserUtils [ADUserUtils] 获取指定节点下的所有用户失败");
+            throw new RuntimeException("ADUserUtils [ADUserUtils] 获取指定节点下的所有用户失败", e);
         } finally {
             close(dc);
         }
@@ -213,7 +213,7 @@ public class DefaultADUserService implements ADUserService {
             }
             return adUser;
         } catch (InstantiationException | IllegalAccessException | NamingException e) {
-            throw new RuntimeException("ADUserUtils [attrToObject] 新建实例失败");
+            throw new RuntimeException("ADUserUtils [attrToObject] 新建实例失败", e);
         }
     }
 
@@ -240,7 +240,7 @@ public class DefaultADUserService implements ADUserService {
                 return null;
             }
         } catch (Exception e) {
-            throw new RuntimeException("ADUserUtils [ADUserUtils] 指定搜索节点搜索指定域用户失败");
+            throw new RuntimeException("ADUserUtils [ADUserUtils] 指定搜索节点搜索指定域用户失败", e);
         } finally {
             close(dc);
         }
@@ -249,6 +249,33 @@ public class DefaultADUserService implements ADUserService {
     @Override
     public ADUser searchBySearchFilter(String searchBase, String searchFilter) {
         return searchBySearchFilter(searchBase, searchFilter, ADUser.class);
+    }
+
+    @Override
+    public <T extends ADUser> List<T> listBySearchFilter(String searchBase, String searchFilter, Class<T> clazz) {
+        LdapContext dc = getLdapContext();
+        SearchControls searchCtls = new SearchControls();
+        searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchCtls.setReturningAttributes(returnedAtts);
+        List<T> result = new ArrayList<>();
+        try {
+            NamingEnumeration<SearchResult> answer = dc.search(searchBase, searchFilter, searchCtls);
+            while (answer.hasMore()) {
+                SearchResult sr = answer.next();
+                Attributes attributes = sr.getAttributes();
+                result.add(attrToObject(attributes, clazz));
+            }
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException("ADUserUtils [ADUserUtils] 指定搜索节点搜索指定域用户失败", e);
+        } finally {
+            close(dc);
+        }
+    }
+
+    @Override
+    public List<ADUser> listBySearchFilter(String searchBase, String searchFilter) {
+        return listBySearchFilter(searchBase, searchFilter, ADUser.class);
     }
 
     /**
@@ -280,7 +307,7 @@ public class DefaultADUserService implements ADUserService {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("ADUserUtils [ADUserUtils] 获取指定节点下的所有用户失败");
+            throw new RuntimeException("ADUserUtils [ADUserUtils] 获取指定节点下的所有用户失败", e);
         } finally {
             close(dc);
         }

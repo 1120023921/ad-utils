@@ -25,6 +25,10 @@ public interface ADUserService {
 
     ADUser searchBySearchFilter(String searchBase, String searchFilter);
 
+    <T extends ADUser> List<T> listBySearchFilter(String searchBase, String searchFilter, Class<T> clazz);
+
+    List<ADUser> listBySearchFilter(String searchBase, String searchFilter);
+
     void getStruct(String searchBase, OU ou);
 
     <T extends ADUser> T authenricate(String searchBase, String username, String password, Class<T> clazz);
