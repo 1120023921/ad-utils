@@ -315,18 +315,20 @@ public class DefaultADUserService implements ADUserService {
 
     @Override
     public <T extends ADUser> T authenricate(String searchBase, String username, String password, Class<T> clazz) {
-        final String searchFilter = "sAMAccountName=" + username;
+        final String searchFilter = "(|(userPrincipalName=" + username + ")" +
+                "(sAMAccountName=" + username + ")(mail=" + username + ")(displayName=" + username + "))";
         T user = searchBySearchFilter(searchBase, searchFilter, clazz);
         if (null == user) {
             throw new UnknownAccountException("LDAP Connection: FAILED login with " + username);
         }
         LdapContext dc = getLdapContext();
         try {
-            dc.addToEnvironment(Context.SECURITY_PRINCIPAL, username + domain);
+            dc.addToEnvironment(Context.SECURITY_PRINCIPAL, username);
             dc.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
             dc.reconnect(null);
             return user;
         } catch (NamingException e) {
+            e.printStackTrace();
             throw new AuthenticateException("LDAP Connection: FAILED login with " + username);
         }
     }

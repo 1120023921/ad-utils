@@ -58,7 +58,7 @@ public class AdUtilsApplicationTests {
 
     @Test
     public void searchBySearchFilter() {
-        String condition = "*Felix*";
+        String condition = "*Felix c*";
         List<ADUser> adUser = adUserService.listBySearchFilter("OU=University,DC=nottingham,DC=edu,DC=cn", "(|(userPrincipalName=" + condition + ")" +
                 "(sAMAccountName=" + condition + ")(mail=" + condition + ")(displayName=" + condition + "))", ADUser.class);
         System.out.println(adUser);
@@ -75,7 +75,7 @@ public class AdUtilsApplicationTests {
 
     @Test
     public void authenricate() {
-        ADUser authenricate = adUserService.authenricate("DC=NBSANKE,DC=TOP", "2015014093", "1120023921Hh", ADUser.class);
+        ADUser authenricate = adUserService.authenricate("OU=University,DC=nottingham,DC=edu,DC=cn", "ITMEETINGTEST02@nottingham.edu.cn", "UoN@201819", ADUser.class);
         System.out.println(authenricate);
     }
 }
