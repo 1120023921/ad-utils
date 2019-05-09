@@ -323,7 +323,7 @@ public class DefaultADUserService implements ADUserService {
         }
         LdapContext dc = getLdapContext();
         try {
-            dc.addToEnvironment(Context.SECURITY_PRINCIPAL, username);
+            dc.addToEnvironment(Context.SECURITY_PRINCIPAL, domain != null && !username.toLowerCase().endsWith(domain) ? username + "@" + domain : username);
             dc.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
             dc.reconnect(null);
             return user;
