@@ -58,7 +58,7 @@ public class AdUtilsApplicationTests {
 
     @Test
     public void searchBySearchFilter() {
-        String condition = "*IT-STAFF@nottingham.edu.cn*";
+        String condition = "*Felix c*";
         List<ADUser> adUser = adUserService.listBySearchFilter("OU=University,DC=nottingham,DC=edu,DC=cn", "(|(userPrincipalName=" + condition + ")" +
                 "(sAMAccountName=" + condition + ")(mail=" + condition + ")(displayName=" + condition + "))", ADUser.class);
         System.out.println(adUser);

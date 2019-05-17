@@ -85,10 +85,13 @@ public class ADUser {
      */
     private String distinguishedName;
 
-    /**
-     * 成员组
-     */
+    private String tel;
+
+    private String ipPhone;
+
     private List<String> member;
+
+    private List<String> menberOf;
 
     public List<String> getObjectClass() {
         return objectClass;
@@ -248,5 +251,29 @@ public class ADUser {
 
     public void setMember(List<String> member) {
         this.member = member;
+    }
+
+    public List<String> getMenberOf() {
+        return menberOf;
+    }
+
+    public void setMenberOf(List<String> menberOf) {
+        this.menberOf = menberOf;
+    }
+
+    public String getTel() {
+        return tel;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
+    }
+
+    public String getIpPhone() {
+        return ipPhone;
+    }
+
+    public void setIpPhone(String ipPhone) {
+        this.ipPhone = ipPhone;
     }
 }
