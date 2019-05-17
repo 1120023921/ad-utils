@@ -1,5 +1,7 @@
 package cn.doublehh.adutils.model;
 
+import java.util.List;
+
 /**
  * @author 胡昊
  * Description: AD用户信息
@@ -9,7 +11,7 @@ package cn.doublehh.adutils.model;
  */
 public class ADUser {
 
-    private String objectClass;
+    private List<String> objectClass;
     /**
      * 名
      */
@@ -83,11 +85,16 @@ public class ADUser {
      */
     private String distinguishedName;
 
-    public String getObjectClass() {
+    /**
+     * 成员组
+     */
+    private List<String> member;
+
+    public List<String> getObjectClass() {
         return objectClass;
     }
 
-    public void setObjectClass(String objectClass) {
+    public void setObjectClass(List<String> objectClass) {
         this.objectClass = objectClass;
     }
 
@@ -233,5 +240,13 @@ public class ADUser {
 
     public void setDistinguishedName(String distinguishedName) {
         this.distinguishedName = distinguishedName;
+    }
+
+    public List<String> getMember() {
+        return member;
+    }
+
+    public void setMember(List<String> member) {
+        this.member = member;
     }
 }

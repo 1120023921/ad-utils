@@ -201,12 +201,30 @@ public class DefaultADUserService implements ADUserService {
                 try {
                     Field field = clazz.getDeclaredField(id);
                     field.setAccessible(true);
-                    field.set(adUser, attr.get());
+                    if (attr.size() > 1) {
+                        NamingEnumeration<?> attrAll = attr.getAll();
+                        List<Object> list = new ArrayList();
+                        while (attrAll.hasMore()) {
+                            list.add(attrAll.next());
+                        }
+                        field.set(adUser, list);
+                    } else {
+                        field.set(adUser, attr.get());
+                    }
                 } catch (NoSuchFieldException e) {
                     try {
                         Field field = clazz.getSuperclass().getDeclaredField(id);
                         field.setAccessible(true);
-                        field.set(adUser, attr.get());
+                        if (attr.size() > 1) {
+                            NamingEnumeration<?> attrAll = attr.getAll();
+                            List<Object> list = new ArrayList();
+                            while (attrAll.hasMore()) {
+                                list.add(attrAll.next());
+                            }
+                            field.set(adUser, list);
+                        } else {
+                            field.set(adUser, attr.get());
+                        }
                     } catch (NoSuchFieldException e1) {
                     }
                 }

@@ -28,7 +28,7 @@ public class AdUtilsApplicationTests {
     @Test
     public void addAdUser() {
         ADUser adUser = new ADUser();
-        adUser.setObjectClass(ObjectClassEnum.USER.getObjectClass());
+//        adUser.setObjectClass(ObjectClassEnum.USER.getObjectClass());
         adUser.setDistinguishedName("CN=会议室103,OU=会议室,OU=浙江万里学院,DC=NBSANKE,DC=TOP");
 //        adUser.setSn("陈");
 //        adUser.setGivenName("玮叶");
@@ -58,7 +58,7 @@ public class AdUtilsApplicationTests {
 
     @Test
     public void searchBySearchFilter() {
-        String condition = "*Felix c*";
+        String condition = "*IT-STAFF@nottingham.edu.cn*";
         List<ADUser> adUser = adUserService.listBySearchFilter("OU=University,DC=nottingham,DC=edu,DC=cn", "(|(userPrincipalName=" + condition + ")" +
                 "(sAMAccountName=" + condition + ")(mail=" + condition + ")(displayName=" + condition + "))", ADUser.class);
         System.out.println(adUser);
@@ -75,7 +75,7 @@ public class AdUtilsApplicationTests {
 
     @Test
     public void authenricate() {
-        ADUser authenricate = adUserService.authenricate("OU=University,DC=nottingham,DC=edu,DC=cn", "ITMEETINGTEST02@nottingham.edu.cn", "UoN@201819", ADUser.class);
+        ADUser authenricate = adUserService.authenricate("OU=University,DC=nottingham,DC=edu,DC=cn", "Felix.CHEN@nottingham.edu.cn", "UoN@201819", ADUser.class);
         System.out.println(authenricate);
     }
 }
