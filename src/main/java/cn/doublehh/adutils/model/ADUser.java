@@ -91,7 +91,7 @@ public class ADUser {
 
     private List<String> member;
 
-    private List<String> menberOf;
+    private List<String> memberOf;
 
     public List<String> getObjectClass() {
         return objectClass;
@@ -253,12 +253,12 @@ public class ADUser {
         this.member = member;
     }
 
-    public List<String> getMenberOf() {
-        return menberOf;
+    public List<String> getMemberOf() {
+        return memberOf;
     }
 
-    public void setMenberOf(List<String> menberOf) {
-        this.menberOf = menberOf;
+    public void setMemberOf(List<String> memberOf) {
+        this.memberOf = memberOf;
     }
 
     public String getTel() {
