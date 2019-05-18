@@ -201,7 +201,7 @@ public class DefaultADUserService implements ADUserService {
                 try {
                     Field field = clazz.getDeclaredField(id);
                     field.setAccessible(true);
-                    if (attr.size() > 1) {
+                    if (!"java.lang.String".equals(field.getType().getName())) {
                         NamingEnumeration<?> attrAll = attr.getAll();
                         List<Object> list = new ArrayList();
                         while (attrAll.hasMore()) {
@@ -215,7 +215,7 @@ public class DefaultADUserService implements ADUserService {
                     try {
                         Field field = clazz.getSuperclass().getDeclaredField(id);
                         field.setAccessible(true);
-                        if (attr.size() > 1) {
+                        if (!"java.lang.String".equals(field.getType().getName())) {
                             NamingEnumeration<?> attrAll = attr.getAll();
                             List<Object> list = new ArrayList();
                             while (attrAll.hasMore()) {
